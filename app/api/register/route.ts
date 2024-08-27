@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import userModel from "@/app/lib/models/user";
-import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "@/app/utils/sendMail";
+import { createActivationToken } from "@/app/utils/token";
 
 interface IRegistrationBody {
   name: string;
@@ -12,27 +12,6 @@ interface IRegistrationBody {
   avatar?: string;
 }
 
-
-interface IActivationToken {
-  token: string;
-  activationCode: string;
-}
-
-export const createActivationToken = (user: any): IActivationToken => {
-  const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
-  const token = jwt.sign(
-    {
-      user,
-      activationCode,
-    },
-    process.env.JWT_SECRET_KEY as Secret,
-    {
-      expiresIn: "5m",
-    }
-  );
-
-  return { token, activationCode };
-};
 
 export const POST = async (req: Request, res: Response) => {
   try {
