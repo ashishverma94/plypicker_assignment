@@ -21,7 +21,6 @@ const connectDB = async () => {
       });
   } catch (error: any) {
     console.log(error.message);
-    // setTimeout(connectDB, 5000);
   }
 };
 

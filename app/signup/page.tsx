@@ -3,10 +3,10 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { OTPPopup } from "../components";
 import { useRouter } from "next/navigation";
 import LoadingGif from "../assets/Loading2.gif";
 import { useToast } from "@/components/ui/use-toast";
+import OTPPopup from "@/components/OTPPopup";
 
 const SignupPage = () => {
   const router = useRouter();

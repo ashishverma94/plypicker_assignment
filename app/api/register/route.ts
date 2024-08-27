@@ -4,6 +4,10 @@ import ejs from "ejs";
 import path from "path";
 import sendMail from "@/app/utils/sendMail";
 import { createActivationToken } from "@/app/utils/token";
+import connectDB from "@/app/lib/config/db";
+
+connectDB();
+
 
 interface IRegistrationBody {
   name: string;
@@ -11,7 +15,6 @@ interface IRegistrationBody {
   password: string;
   avatar?: string;
 }
-
 
 export const POST = async (req: Request, res: Response) => {
   try {
