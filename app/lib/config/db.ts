@@ -14,11 +14,9 @@ const connectDB = async () => {
   }
 
   try {
-    await mongoose
-      .connect(dbUrl!, { dbName: "plypicker", bufferCommands: false })
-      .then((data) => {
-        console.log(`Database connected with ${data.connection.host}`);
-      });
+    await mongoose.connect(dbUrl!, { dbName: "plypicker" }).then((data) => {
+      console.log(`Database connected with ${data.connection.host}`);
+    });
   } catch (error: any) {
     console.log(error.message);
   }
