@@ -1,16 +1,17 @@
 "use client";
 
+import axios from "axios";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
-import { Loader2 } from "lucide-react";
 import React, { FC, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 type Props = {
   open: boolean;
   setOpen: any;
+  token: string;
 };
 
 type VerifyNumber = {
@@ -20,7 +21,7 @@ type VerifyNumber = {
   "3": string;
 };
 
-const OTPPopup: FC<Props> = ({ open, setOpen }) => {
+const OTPPopup: FC<Props> = ({ open, setOpen, token }) => {
   const router = useRouter();
 
   const [delLoading, setDelLoading] = useState<boolean>(false);
@@ -40,36 +41,16 @@ const OTPPopup: FC<Props> = ({ open, setOpen }) => {
   });
 
   const verificationHandler = async () => {
-    console.log("OTP");
-  };
-
-  const handleInputChange = (index: number, value: string) => {
-    setInvalidError(false);
-    const newVerifyNumber = { ...VerifyNumber, [index]: value };
-    setVerifyNumber(newVerifyNumber);
-
-    if (value === "" && index > 0) {
-      inputRefs[index - 1].current?.focus();
-    } else if (value.length === 1 && index < 3) {
-      inputRefs[index + 1].current?.focus();
-    }
-  };
-
-  const handleClickOutside = (event: any) => {
-    if (event.target === event.currentTarget) {
-      setOpen(false);
-    }
-  };
-
-  const handleDeleteBlog = async () => {
+    const otp =
+      VerifyNumber[0] + VerifyNumber[1] + VerifyNumber[2] + VerifyNumber[3];
     try {
       setDelLoading(true);
-      await axios.delete(`posts/`);
+      await axios.post(`verification-email`, { otp, token });
       toast({
         style: { backgroundColor: "#4CAF50", color: "#fff" },
         description: "Blog deleted successfully!",
       });
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       setDelErr(
         error.response?.data.message || error.message || "Internal server error"
@@ -87,19 +68,21 @@ const OTPPopup: FC<Props> = ({ open, setOpen }) => {
     }
   };
 
-  return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleClickOutside}
-    >
-      <div className="relative bg-white pb-6 h-max p-2 rounded-lg shadow-lg w-11/12 max-w-md">
-        <button
-          className="absolute top-1 right-4 text-[red]  hover:text-[#ec6767] text-2xl"
-          onClick={() => setOpen(false)}
-        >
-          &times;
-        </button>
+  const handleInputChange = (index: number, value: string) => {
+    setInvalidError(false);
+    const newVerifyNumber = { ...VerifyNumber, [index]: value };
+    setVerifyNumber(newVerifyNumber);
 
+    if (value === "" && index > 0) {
+      inputRefs[index - 1].current?.focus();
+    } else if (value.length === 1 && index < 3) {
+      inputRefs[index + 1].current?.focus();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative bg-white pb-6 h-max p-2 rounded-lg shadow-lg w-11/12 max-w-md">
         <div className="h-full flex flex-col justify-center w-full items-center px-4">
           <h2 className="text-2xl pt-3 font-[700] mb-4 text-center">
             Verify Your Account
@@ -146,7 +129,7 @@ const OTPPopup: FC<Props> = ({ open, setOpen }) => {
               </Button>
             ) : (
               <Button
-                onClick={() => handleDeleteBlog()}
+                onClick={() => verificationHandler()}
                 className="px-[25px] py-[15px] font-[500] text-[18px] rounded-md bg-gradient-to-r from-[#3d50b9] to-[#0675c4] text-white hover:from-[#3fa6c3] hover:to-[#2c77e1] focus:outline-none focus:ring-2 focus:ring-[#000f80] hover:text-[white] hover:border-[2px] hover:border-[#000f80] focus:ring-offset-2 shadow-md transition duration-150 ease-in-out transform hover:scale-105 w-auto"
               >
                 Verify OTP

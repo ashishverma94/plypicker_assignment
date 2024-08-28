@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LoadingGif from "../assets/Loading2.gif";
+import LoadingGif from "../../../assets/Loading2.gif";
 import { useToast } from "@/components/ui/use-toast";
 import OTPPopup from "@/components/OTPPopup";
 
@@ -19,6 +19,7 @@ const SignupPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
+  const [token, setToken] = useState<string>("");
 
   useEffect(() => {
     setTimeout(() => {
@@ -55,6 +56,7 @@ const SignupPage = () => {
         style: { backgroundColor: "#4CAF50", color: "#fff" },
         description: response.data.message,
       });
+      setToken(response.data.activationToken);
       setOpen(true);
     } catch (err: any) {
       console.log(err);
@@ -199,7 +201,7 @@ const SignupPage = () => {
           Already have account.
         </h1>
       </div>
-      {open && <OTPPopup open={open} setOpen={setOpen} />}
+      {!open && <OTPPopup open={open} setOpen={setOpen} token={token} />}
     </div>
   );
 };

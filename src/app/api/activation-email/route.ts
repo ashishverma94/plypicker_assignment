@@ -1,6 +1,6 @@
+import userModel, { IUser } from "@/lib/models/user";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import userModel, { IUser } from "@/app/lib/models/user";
 
 export const POST = async (req: Request, res: Response) => {
   try {

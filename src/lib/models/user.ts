@@ -42,7 +42,8 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 
     role: {
       type: String,
-      default: "user",
+      default: "team-member",
+      required: [true, "role is required"],
     },
   },
   {
@@ -73,7 +74,8 @@ userSchema.methods.getJwtToken = function () {
   });
 };
 
-const userModel: Model<IUser> = models.User || mongoose.model("User", userSchema);
+const userModel: Model<IUser> =
+  models.User || mongoose.model("User", userSchema);
 
 // const userModel: Model<IUser> =  mongoose.model("User", userSchema);
 export default userModel;

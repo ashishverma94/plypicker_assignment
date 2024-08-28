@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import userModel from "@/app/lib/models/user";
 import ejs from "ejs";
 import path from "path";
-import sendMail from "@/app/utils/sendMail";
-import { createActivationToken } from "@/app/utils/token";
-import connectDB from "@/app/lib/config/db";
+import connectDB from "@/lib/config/db";
+import userModel from "@/lib/models/user";
+import { createActivationToken } from "@/utils/token";
+import sendMail from "@/utils/sendMail";
 
 connectDB();
 
@@ -13,12 +13,12 @@ interface IRegistrationBody {
   name: string;
   email: string;
   password: string;
-  avatar?: string;
+  role:string
 }
 
 export const POST = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password,role } = await req.json();
     const isEmailExist = await userModel.findOne({ email });
     if (isEmailExist) {
       return new NextResponse(
@@ -32,6 +32,7 @@ export const POST = async (req: Request, res: Response) => {
       name,
       email,
       password,
+      role,
     };
 
     const activationToken = createActivationToken(user);

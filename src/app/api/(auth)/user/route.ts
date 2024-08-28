@@ -1,10 +1,11 @@
+import connectDB from "@/lib/config/db";
+import userModel from "@/lib/models/user";
 import { NextResponse } from "next/server";
-import connectDB from "@/app/lib/config/db";
-import userModel from "@/app/lib/models/user";
+
+connectDB();
 
 export const GET = async () => {
   try {
-    await connectDB();
     const users = await userModel.find();
     return NextResponse.json(JSON.stringify(users), { status: 200 });
   } catch (error: any) {
