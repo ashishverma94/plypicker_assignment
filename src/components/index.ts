@@ -1,3 +1,5 @@
 import OTPPopup from "./OTPPopup";
+import Navbar from "./Navbar";
+import ProductRow from "./ProductRow";
 
-export {OTPPopup}
+export { OTPPopup, Navbar, ProductRow };

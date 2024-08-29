@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/utils/uploadImage";
 import { Loader2 } from "lucide-react";
+import { departmentArray } from "@/utils/data";
 
 const page = () => {
   const { toast } = useToast();
@@ -20,6 +21,8 @@ const page = () => {
   const [prodDepartment, setProdDepartment] = useState<string>("");
   const [imageObj, setImageObj] = useState<any>(null);
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     setTimeout(() => {
@@ -29,38 +32,12 @@ const page = () => {
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const avatarUrl = useRef(
-    "https://avatarfiles.alphacoders.com/161/161002.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTG9CErcUzmfCXsJWF7kHzMbru22qdGhaGZF251M1c_yYhduC-Bx4SHVFtOn2g9R1-ShOo&usqp=CAU"
   );
 
   const updateAvatar = (imgSrc: any) => {
     avatarUrl.current = imgSrc;
   };
-
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const handleUpload = async () => {
-    if (!imageObj) {
-      alert("No file selected");
-      return;
-    }
-
-    const userId = "USER_ID";
-    const oldProfilePicPath = `profile_pics/${userId}/old_profile_pic.jpg`;
-    const newProfilePicPath = `profile_pics/${userId}/new_profile_pic.jpg`;
-
-    try {
-      const oldPicRef = ref(storage, oldProfilePicPath);
-      await deleteObject(oldPicRef);
-      const newPicRef = ref(storage, newProfilePicPath);
-      await uploadBytes(newPicRef, imageObj);
-      alert("Profile picture updated successfully");
-    } catch (error) {
-      console.error("Error updating profile picture:", error);
-      alert("Failed to update profile picture");
-    }
-  };
-
-  const [message, setMessage] = useState<string>("");
 
   const handleSubmit = async () => {
     if (!prodName) {
@@ -106,7 +83,6 @@ const page = () => {
       setProdName("");
       setProdDesc("");
       setProdDepartment("");
-      
     } catch (err: any) {
       console.log(err);
       if (err.response) {
@@ -158,7 +134,6 @@ const page = () => {
               </label>
               <input
                 id="email"
-                type="email"
                 name="email"
                 value={prodDesc}
                 onChange={(e) => setProdDesc(e.target.value)}
@@ -168,21 +143,29 @@ const page = () => {
             </div>
             <div>
               <label
-                htmlFor="password"
+                htmlFor="department"
                 className="block text-sm font-medium text-gray-700"
               >
                 Select product department
                 <span className="mx-1 text-[red] text-[20px] font-bold">*</span>
               </label>
-              <input
-                id="password"
-                type="password"
-                name="password"
+              <select
+                id="department"
+                name="department"
                 value={prodDepartment}
                 onChange={(e) => setProdDepartment(e.target.value)}
                 className="h-[40px] px-2 mt-1 mb-2 block w-full border border-[black] rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
-              />
+              >
+                <option value="" disabled>
+                  Select product department
+                </option>
+                {departmentArray.map((department, index) => (
+                  <option key={index} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="flex flex-col justify-center items-center gap-3">
