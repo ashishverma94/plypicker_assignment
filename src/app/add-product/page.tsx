@@ -1,16 +1,31 @@
 "use client";
 
 import Modal from "@/components/ImageModal";
-import React, { useRef, useState } from "react";
+import { storage } from "@/utils/firebase";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@/utils/firebase";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { uploadImage } from "@/utils/uploadImage";
+import { Loader2 } from "lucide-react";
 
 const page = () => {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const [prodName, setProdName] = useState<string>("");
   const [prodDesc, setProdDesc] = useState<string>("");
   const [prodDepartment, setProdDepartment] = useState<string>("");
   const [imageObj, setImageObj] = useState<any>(null);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setError("");
+    }, 7000);
+  }, [error]);
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const avatarUrl = useRef(
@@ -29,7 +44,7 @@ const page = () => {
       return;
     }
 
-    const userId = "USER_ID"; // Replace with the actual user ID
+    const userId = "USER_ID";
     const oldProfilePicPath = `profile_pics/${userId}/old_profile_pic.jpg`;
     const newProfilePicPath = `profile_pics/${userId}/new_profile_pic.jpg`;
 
@@ -45,8 +60,68 @@ const page = () => {
     }
   };
 
+  const [message, setMessage] = useState<string>("");
+
   const handleSubmit = async () => {
-    console.log(prodName, prodDesc, prodDepartment);
+    if (!prodName) {
+      setError("Product Name is required");
+      return;
+    }
+    if (!prodDesc) {
+      setError("Product Description is required");
+      return;
+    }
+    if (!prodDepartment) {
+      setError("Product Department is required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMessage("Uploading Image");
+      const imageURL = await uploadImage(imageObj);
+      console.log(imageURL);
+      setMessage("Sending Data");
+
+      if (!imageURL) {
+        setError("Error in uploading image");
+        return;
+      }
+
+      const currProduct = {
+        prodName,
+        prodDesc,
+        prodDepartment,
+        prodPic: imageURL,
+      };
+
+      const response = await axios.post(`/api/product/add`, {
+        currProduct,
+      });
+      toast({
+        style: { backgroundColor: "#4CAF50", color: "#fff" },
+        description: "Product added successfully",
+      });
+      setImageObj(null);
+      setProdName("");
+      setProdDesc("");
+      setProdDepartment("");
+      
+    } catch (err: any) {
+      console.log(err);
+      if (err.response) {
+        setError(
+          `Error: ${err.response.data.message || "Something went wrong"}`
+        );
+      } else if (err.request) {
+        setError("Network error. Please try again later.");
+      } else {
+        setError("Error: " + err.message);
+      }
+    } finally {
+      setLoading(false);
+      setMessage("");
+    }
   };
 
   return (
@@ -134,7 +209,15 @@ const page = () => {
             />
           )}
         </div>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <div className="text-[red] font-bold h-[18px]">{error && error}</div>
+        {loading ? (
+          <Button disabled>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {message}
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit}>Submit</Button>
+        )}
       </div>
     </div>
   );

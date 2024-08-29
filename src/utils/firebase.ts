@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCx0ZF4QBO0oy9icA81rtJkOUM33NkNb6o",
-  authDomain: "plypicker-e35d7.firebaseapp.com",
-  projectId: "plypicker-e35d7",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_ADMIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
   storageBucket: "plypicker-e35d7.appspot.com",
-  messagingSenderId: "13945101893",
-  appId: "1:13945101893:web:89fd6d3f8e76e4bf234d2c",
-  measurementId: "G-49REZLLEJS"
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
