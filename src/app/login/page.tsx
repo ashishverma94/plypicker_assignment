@@ -4,14 +4,12 @@ import axios from "axios";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import useAuthStore from "@/store/userStore";
-import LoadingGif from "../assets/Loading2.gif";
 import { useToast } from "@/components/ui/use-toast";
+import LoadingGif from "../../../assets/Loading2.gif";
 
 const LoginPage = () => {
   const router = useRouter();
   const { toast } = useToast();
-  // const { loginUser } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +32,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(
-        `api/login`,
+        `api/user/login`,
         {
           email,
           password,
@@ -45,7 +43,6 @@ const LoginPage = () => {
         style: { backgroundColor: "#4CAF50", color: "#fff" },
         description: "Logged in successfully",
       });
-      // loginUser(response?.data?.user);
       router.push("/dashboard");
     } catch (err: any) {
       if (err.response) {

@@ -1,6 +1,6 @@
-import userModel, { IUser } from "@/lib/models/user";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import userModel, { IUser } from "@/models/user";
 
 export const POST = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,7 @@ export const POST = async (req: Request, res: Response) => {
 
     const newUser: { user: IUser; activationCode: string } = jwt.verify(
       activation_token,
-      process.env.ACTIVATION_SECRET as string
+      process.env.JWT_SECRET_KEY as string
     ) as { user: IUser; activationCode: string };
 
     if (newUser.activationCode !== activation_code) {
@@ -21,7 +21,7 @@ export const POST = async (req: Request, res: Response) => {
       );
     }
 
-    const { name, email, password } = newUser.user;
+    const { name, email, password, role } = newUser.user;
     const existUser = await userModel.findOne({ email });
 
     if (existUser) {
@@ -34,11 +34,12 @@ export const POST = async (req: Request, res: Response) => {
       );
     }
 
-    // const user = await userModel.create({
-    //   name,
-    //   email,
-    //   password,
-    // });
+    const user = await userModel.create({
+      name,
+      email,
+      password,
+      role,
+    });
 
     return NextResponse.json(
       {

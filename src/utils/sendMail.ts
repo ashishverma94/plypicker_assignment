@@ -21,11 +21,10 @@ const sendMail = async (options: EmailOptions): Promise<void> => {
   });
 
   const { email, subject, template, data } = options;
-  console.log(email, subject, template, options);
   // get the path to the email template file
   const templatePath = path.join(
     process.cwd(),
-    "app",
+    "src",
     "lib",
     "mails",
     "activation-mail.ejs"

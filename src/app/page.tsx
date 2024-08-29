@@ -1,113 +1,178 @@
-import Image from "next/image";
+"use client";
+
+import { useRef, useState } from "react";
+import "react-image-crop/dist/ReactCrop.css";
+import ReactCrop, { Crop } from "react-image-crop";
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const [imgSrc, setImgSrc] = useState();
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState<any>(null);
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  const imgRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const [croppedImageUrl, setCroppedImageUrl] = useState('');
+
+
+  const handleFileSelect = (e: any) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => setImgSrc((reader as any)?.result));
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleCompleteCrop = (crop: any) => {
+    drawImageOnCanvas(imgRef.current, canvasRef.current, crop);
+    setCompletedCrop(crop);
+  };
+
+  function generateDownload(canvas: any, crop: any) {
+    console.log("hi");
+
+    console.log(crop, canvas);
+    if (!crop || !canvas) {
+      return;
+    }
+
+    canvas.toBlob(async (blob:any) => {
+      if (blob) {
+        const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        console.log(file) ;
+        // Upload to Firebase Storage
+        // const storageRef = storage.ref(`images/${file.name}`);
+        // await storageRef.put(file);
+
+        // const downloadURL = await storageRef.getDownloadURL();
+        // console.log('File available at', downloadURL);
+        // setCroppedImageUrl(downloadURL);
+      }
+    }, 'image/jpeg');
+
+
+  }
+
+  const handleDownload = () => {
+    generateDownload(canvasRef.current, completedCrop);
+  };
+
+  const canvasStyles = {
+    width: Math.round((completedCrop as any)?.width ?? 0),
+    height: Math.round((completedCrop as any)?.height ?? 0),
+  };
+  const [croppedImage, setCroppedImage] = useState(null);
+
+  function drawImageOnCanvas(image: any, canvas: any, crop: any) {
+    if (!crop || !canvas || !image) {
+      return;
+    }
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    const ctx = canvas.getContext("2d");
+    const pixelRatio = window.devicePixelRatio;
+
+    canvas.width = crop.width * pixelRatio * scaleX;
+    canvas.height = crop.height * pixelRatio * scaleY;
+
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = "high";
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width * scaleX,
+      crop.height * scaleY
+    );
+
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    setCroppedImage(dataUrl);
+  }
+
+  return (
+    <div className="App">
+      <div className="FileSelector">
+        <input
+          id="file"
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          placeholder="Choose file"
         />
       </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="CropperWrapper w-[400px] flex justify-center items-center gap-3 flex-col h-[400px] border-[2px] border-black p-8">
+        <ReactCrop
+          className="w-[300px] h-[300px]"
+          crop={crop}
+          // @ts-ignore
+          onChange={setCrop}
+          aspect={1}
+          // onComplete={handleCompleteCrop}
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          <div className="flex justify-center items-center">
+            {imgSrc && (
+              <img
+                className="h-max-[300px] bg-cover"
+                ref={imgRef}
+                src={imgSrc}
+                alt="cropper image"
+              />
+            )}
+          </div>
+        </ReactCrop>
+        {!imgSrc && <p className="InfoText">Choose file to crop</p>}
+        {/* <div className="CanvasWrapper">
+          <canvas ref={canvasRef} style={canvasStyles} />
+        </div> */}
       </div>
-    </main>
+
+      <div>
+        <button
+          type="button"
+          disabled={!completedCrop}
+          onClick={handleDownload}
+        >
+          Download cropped image
+        </button>
+      </div>
+
+      {!!completedCrop && (
+        <>
+          <div>
+            <canvas
+              ref={canvasRef}
+              style={{
+                border: '1px solid black',
+                objectFit: 'contain',
+                width: completedCrop.width,
+                height: completedCrop.height,
+              }}
+            />
+          </div>
+          <div>
+            <button onClick={handleDownload}>Download Crop</button>
+            
+            <a
+              href="#hidden"
+              // download
+              style={{
+                position: 'absolute',
+                top: '-200vh',
+                visibility: 'hidden',
+              }}
+            >
+              Hidden download
+            </a>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

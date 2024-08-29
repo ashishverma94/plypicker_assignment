@@ -8,12 +8,13 @@ export default function ProfilePage() {
 
   const logoutTheUser = async () => {
     try {
-      await axios.get("api/users/logout");
+      await axios.get("api/user/logout");
       router.push("/login");
     } catch (error: any) {
       console.log("Ups! We could not logout the user" + error.message);
     }
   };
+  
   return (
     <div className="mx-5">
       <div className="my-10 flex justify-end ">

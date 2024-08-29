@@ -2,11 +2,11 @@
 
 import axios from "axios";
 import Image from "next/image";
+import { OTPPopup } from "@/components";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LoadingGif from "../../../assets/Loading2.gif";
 import { useToast } from "@/components/ui/use-toast";
-import OTPPopup from "@/components/OTPPopup";
+import LoadingGif from "../../../assets/Loading2.gif";
 
 const SignupPage = () => {
   const router = useRouter();
@@ -42,15 +42,20 @@ const SignupPage = () => {
       setError("Please enter your password");
       return;
     }
+    if (!role) {
+      setError("Please select your role");
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post(`api/register`, {
+      const response = await axios.post(`api/user/register`, {
         name,
         email,
         password,
+        role,
       });
       toast({
         style: { backgroundColor: "#4CAF50", color: "#fff" },
@@ -201,7 +206,9 @@ const SignupPage = () => {
           Already have account.
         </h1>
       </div>
-      {!open && <OTPPopup open={open} setOpen={setOpen} token={token} />}
+      {open && (
+        <OTPPopup open={open} setOpen={setOpen} activation_token={token} />
+      )}
     </div>
   );
 };

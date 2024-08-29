@@ -3,7 +3,6 @@ import jwt, { Secret } from "jsonwebtoken";
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { models } from "mongoose";
 
-require("dotenv").config();
 
 const emailRegexPattern: RegExp =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

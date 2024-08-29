@@ -11,7 +11,7 @@ import React, { FC, useRef, useState } from "react";
 type Props = {
   open: boolean;
   setOpen: any;
-  token: string;
+  activation_token: string;
 };
 
 type VerifyNumber = {
@@ -21,7 +21,7 @@ type VerifyNumber = {
   "3": string;
 };
 
-const OTPPopup: FC<Props> = ({ open, setOpen, token }) => {
+const OTPPopup: FC<Props> = ({ open, setOpen, activation_token }) => {
   const router = useRouter();
 
   const [delLoading, setDelLoading] = useState<boolean>(false);
@@ -41,16 +41,19 @@ const OTPPopup: FC<Props> = ({ open, setOpen, token }) => {
   });
 
   const verificationHandler = async () => {
-    const otp =
+    const activation_code =
       VerifyNumber[0] + VerifyNumber[1] + VerifyNumber[2] + VerifyNumber[3];
     try {
       setDelLoading(true);
-      await axios.post(`verification-email`, { otp, token });
+      await axios.post(`/api/user/activation-email`, {
+        activation_code,
+        activation_token,
+      });
       toast({
         style: { backgroundColor: "#4CAF50", color: "#fff" },
-        description: "Blog deleted successfully!",
+        description: "User registered successfully!",
       });
-      router.push("/dashboard");
+      router.push("/login");
     } catch (error: any) {
       setDelErr(
         error.response?.data.message || error.message || "Internal server error"
