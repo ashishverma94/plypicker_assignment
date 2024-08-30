@@ -1,20 +1,16 @@
 "use client";
 
-import Modal from "@/components/ImageModal";
-import { storage } from "@/utils/firebase";
-import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { deleteObject, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import { uploadImage } from "@/utils/uploadImage";
 import { Loader2 } from "lucide-react";
+import Modal from "@/components/ImageModal";
 import { departmentArray } from "@/utils/data";
+import { Button } from "@/components/ui/button";
+import { uploadImage } from "@/utils/uploadImage";
+import { useEffect, useRef, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 const page = () => {
   const { toast } = useToast();
-  const router = useRouter();
 
   const [prodName, setProdName] = useState<string>("");
   const [prodDesc, setProdDesc] = useState<string>("");

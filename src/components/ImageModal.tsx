@@ -1,6 +1,7 @@
 import ImageCropper from "../components/ImageCropper";
 
-const Modal = ({ updateAvatar, closeModal,imageObj }: any) => {
+const Modal = ({ updateAvatar, closeModal, imageObj }: any) => {
+  console.log(updateAvatar, closeModal, imageObj);
   return (
     <div
       className="relative z-10"

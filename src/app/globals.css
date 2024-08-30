@@ -99,3 +99,7 @@
   animation: shake 0.5s ease-in-out;
 }
 
+.empty_text {
+  -webkit-text-stroke: 1px black;
+}
+

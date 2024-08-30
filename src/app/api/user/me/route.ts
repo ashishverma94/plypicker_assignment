@@ -8,7 +8,6 @@ connectDB();
 export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    console.log(userId);
     const user = await userModel.findById(userId).select("-password");
     if (!user) {
       return NextResponse.json(
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, user }, { status: 400 });
+    return NextResponse.json({ success: true, user }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },

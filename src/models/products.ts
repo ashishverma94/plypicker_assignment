@@ -21,16 +21,10 @@ export interface IProduct extends Document {
 const productSchema: Schema<IProduct> = new mongoose.Schema(
   {
     currProduct: {
-      prodName: { type: String, required: [true, "Product Name is required"] },
-      prodDesc: {
-        type: String,
-        required: [true, "Product Description is required"],
-      },
-      prodDepartment: {
-        type: String,
-        required: [true, "Product Department is required"],
-      },
-      prodPic: { type: String, required: [true, "Product Pic is required"] },
+      prodName: String,
+      prodDesc: String,
+      prodDepartment: String,
+      prodPic: String,
     },
     oldProduct: {
       prodName: String,

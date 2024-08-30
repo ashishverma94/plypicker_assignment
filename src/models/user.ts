@@ -3,7 +3,6 @@ import jwt, { Secret } from "jsonwebtoken";
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { models } from "mongoose";
 
-
 const emailRegexPattern: RegExp =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -12,6 +11,10 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: string;
+  totReq: number;
+  pendingReq: number;
+  approvedReq: number;
+  rejectedReq: number;
   comparePassword: (password: string) => Promise<boolean>;
   getJwtToken: () => any;
 }
@@ -38,12 +41,14 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
-
     role: {
       type: String,
       default: "team-member",
       required: [true, "role is required"],
     },
+    totReq: { type: Number, default: 0 },
+    approvedReq: { type: Number, default: 0 },
+    rejectedReq: { type: Number, default: 0 },
   },
   {
     timestamps: true,
