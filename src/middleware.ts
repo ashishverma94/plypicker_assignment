@@ -34,14 +34,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
   if (
-    user.role !== "admin" &&
+    user?.role !== "admin" &&
     adminRoutes.some((route) => path.startsWith(route))
   ) {
     return NextResponse.redirect(new URL("/access-denied", request.url));
   }
 
   if (
-    user.role !== "team-member" &&
+    user?.role !== "team-member" &&
     teamMemberRoutes.some((route) => path.startsWith(route))
   ) {
     return NextResponse.redirect(new URL("/access-denied", request.url));
